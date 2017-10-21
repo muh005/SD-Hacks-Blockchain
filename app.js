@@ -22,7 +22,7 @@ http.createServer(function (req, res) {
                                 res.end();
                             } else {
                                 exec("rm "+newpath+".zip");
-                                res.write("Your ipfs hash is "stdout.split(' ')[1]);
+                                res.write("Your ipfs hash is "+stdout.split(' ')[1]);
                                 console.log(stderr);
                                 res.end();
                             }

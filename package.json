@@ -1,0 +1,23 @@
+{
+  "name": "dcin",
+  "version": "1.0.0",
+  "description": "",
+  "main": "app.js",
+  "dependencies": {
+    "formidable": "^1.1.1"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/qianmengchen/Dcin.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/qianmengchen/Dcin/issues"
+  },
+  "homepage": "https://github.com/qianmengchen/Dcin#readme"
+}

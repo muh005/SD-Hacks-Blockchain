@@ -11,10 +11,23 @@ http.createServer(function (req, res) {
             var newpath = '/home/dcin/Dcin/uploaded/' + files.filetoupload.name;
             fs.rename(oldpath, newpath, function (err) {
                 if (err) throw err;
-                exec("ipfs add "+newpath, function(err, stdout, stderr){
-                    res.write(stdout);
-                    console.log(stderr);
-                    res.end();
+                exec("zip "+newpath+".zip"+" "+newpath, function(err, stdout, stderr) {
+                    if (err) {
+                        res.write(err);
+                        res.end();
+                    } else {
+                        exec("ipfs add "+newpath+".zip", function(err, stdout, stderr){
+                            if (err) {
+                                res.write(err);
+                                res.end();
+                            } else {
+                                exec("rm "+newpath+".zip");
+                                res.write("Your ipfs hash is "stdout.split(' ')[1]);
+                                console.log(stderr);
+                                res.end();
+                            }
+                        });
+                    }
                 });
             });
         });

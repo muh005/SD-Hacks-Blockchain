@@ -1,6 +1,7 @@
 var http = require('http');
 var formidable = require('formidable');
 var fs = require('fs');
+var exec = require('child_process').exec;
 
 http.createServer(function (req, res) {
     if (req.url == '/fileupload') {
@@ -10,8 +11,11 @@ http.createServer(function (req, res) {
             var newpath = '/home/dcin/Dcin/uploaded/' + files.filetoupload.name;
             fs.rename(oldpath, newpath, function (err) {
                 if (err) throw err;
-                res.write('File uploaded and moved!');
-                res.end();
+                exec("ipfs add "+newpath, function(err, stdout, stderr){
+                    res.write(stdout);
+                    console.log(stderr);
+                    res.end();
+                });
             });
         });
     } else {

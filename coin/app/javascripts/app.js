@@ -6,10 +6,10 @@ import { default as Web3} from 'web3';
 import { default as contract } from 'truffle-contract'
 
 // Import our contract artifacts and turn them into usable abstractions.
-import metacoin_artifacts from '../../build/contracts/MetaCoin.json'
+import question_artifacts from '../../build/contracts/Question.json'
 
-// MetaCoin is our usable abstraction, which we'll use through the code below.
-var MetaCoin = contract(metacoin_artifacts);
+// Question is our usable abstraction, which we'll use through the code below.
+var Question = contract(question_artifacts);
 
 // The following code is simple to show off interacting with your contracts.
 // As your needs grow you will likely need to change its form and structure.
@@ -21,8 +21,8 @@ window.App = {
   start: function() {
     var self = this;
 
-    // Bootstrap the MetaCoin abstraction for Use.
-    MetaCoin.setProvider(web3.currentProvider);
+    // Bootstrap the Question abstraction for Use.
+    Question.setProvider(web3.currentProvider);
 
     // Get the initial account balance so it can be displayed.
     web3.eth.getAccounts(function(err, accs) {
@@ -47,14 +47,30 @@ window.App = {
     var status = document.getElementById("status");
     status.innerHTML = message;
   },
+/*
+  refreshBalance: function() {
+    var self = this;
+
+    var quest;
+    Question.deployed().then(function(instance) {
+      quest = instance;
+      return quest.getBalance.call(account, {from: account});
+    }).then(function(value) {
+      var balance_element = document.getElementById("balance");
+      balance_element.innerHTML = value.valueOf();
+    }).catch(function(e) {
+      console.log(e);
+      self.setStatus("Error getting balance; see log.");
+    });
+  },*/
 
   refreshBalance: function() {
     var self = this;
 
-    var meta;
-    MetaCoin.deployed().then(function(instance) {
-      meta = instance;
-      return meta.getBalance.call(account, {from: account});
+    var quest;
+    Question.deployed().then(function(instance) {
+      quest = instance;
+      return quest.getRound.call(account, {from: account});
     }).then(function(value) {
       var balance_element = document.getElementById("balance");
       balance_element.innerHTML = value.valueOf();
@@ -72,10 +88,10 @@ window.App = {
 
     this.setStatus("Initiating transaction... (please wait)");
 
-    var meta;
-    MetaCoin.deployed().then(function(instance) {
-      meta = instance;
-      return meta.sendCoin(receiver, amount, {from: account});
+    var quest;
+    Question.deployed().then(function(instance) {
+      quest = instance;
+      return quest.sendCoin(receiver, amount, {from: account});
     }).then(function() {
       self.setStatus("Transaction complete!");
       self.refreshBalance();
@@ -83,13 +99,27 @@ window.App = {
       console.log(e);
       self.setStatus("Error sending coin; see log.");
     });
+  },
+
+  getBalance: function() {
+    var self = this;
+
+    var receiver = document.getElementById("receiver").value;
+
+    var quest;
+    Question.deployed().then(function(instance) {
+      quest = instance;
+      quest.getBalance.call(receiver, {from: accounts[0]}).then(function(balance) {
+        console.log(balance.toNumber());
+      });
+    })
   }
 };
 
 window.addEventListener('load', function() {
   // Checking if Web3 has been injected by the browser (Mist/MetaMask)
   if (typeof web3 !== 'undefined') {
-    console.warn("Using web3 detected from external source. If you find that your accounts don't appear or you have 0 MetaCoin, ensure you've configured that source properly. If using MetaMask, see the following link. Feel free to delete this warning. :) http://truffleframework.com/tutorials/truffle-and-metamask")
+    console.warn("Using web3 detected from external source. If you find that your accounts don't appear or you have 0 Question, ensure you've configured that source properly. If using MetaMask, see the following link. Feel free to delete this warning. :) http://truffleframework.com/tutorials/truffle-and-metamask")
     // Use Mist/MetaMask's provider
     window.web3 = new Web3(web3.currentProvider);
   } else {

@@ -8,11 +8,13 @@ http.createServer(function (req, res) {
         var form = new formidable.IncomingForm();
         form.parse(req, function (err, fields, files) {
             var oldpath = files.filetoupload.path;
-            var newpath = '/home/dcin/Dcin/uploaded/' + files.filetoupload.name;
+            var prefix = '/home/dcin/Dcin/uploaded/';
+            var suffix = files.filetoupload.name;
+            var newpath = prefix + suffix;
             fs.rename(oldpath, newpath, function (err) {
                 if (err) throw err;
-                console.log("zip "+newpath+".zip"+" "+newpath);
-                exec("zip "+newpath+".zip"+" "+newpath, function(err, stdout, stderr) {
+                console.log("cd "+prefix+" && "+"zip "+suffix+".zip"+" "+suffix+" && cd ..");
+                exec("cd "+prefix+" && "+"zip "+suffix+".zip"+" "+suffix+" && cd ..", function(err, stdout, stderr) {
                     if (err) {
                         res.write(err);
                         res.end();
@@ -25,6 +27,7 @@ http.createServer(function (req, res) {
                             } else {
                                 console.log("rm "+newpath+".zip");
                                 exec("rm "+newpath+".zip");
+                                exec("rm "+newpath);
                                 res.write("Your ipfs hash is "+stdout.split(' ')[1]);
                                 console.log(stderr);
                                 res.end();

@@ -6,10 +6,10 @@ import { default as Web3} from 'web3';
 import { default as contract } from 'truffle-contract'
 
 // Import our contract artifacts and turn them into usable abstractions.
-import question_artifacts from '../../build/contracts/Question.json'
+import question_artifacts from '../../build/contracts/QuestionList.json'
 
-// Question is our usable abstraction, which we'll use through the code below.
-var Question = contract(question_artifacts);
+// QuestionList is our usable abstraction, which we'll use through the code below.
+var QuestionList = contract(question_artifacts);
 
 // The following code is simple to show off interacting with your contracts.
 // As your needs grow you will likely need to change its form and structure.
@@ -21,8 +21,8 @@ window.App = {
   start: function() {
     var self = this;
 
-    // Bootstrap the Question abstraction for Use.
-    Question.setProvider(web3.currentProvider);
+    // Bootstrap the QuestionList abstraction for Use.
+    QuestionList.setProvider(web3.currentProvider);
 
     // Get the initial account balance so it can be displayed.
     web3.eth.getAccounts(function(err, accs) {
@@ -38,81 +38,65 @@ window.App = {
 
       accounts = accs;
       account = accounts[0];
-
-      self.refreshBalance();
     });
   },
 
-  setStatus: function(message) {
-    var status = document.getElementById("status");
-    status.innerHTML = message;
-  },
-/*
-  refreshBalance: function() {
+  createQuestion: function() {
     var self = this;
+    var ipfs = document.getElementById("ipfs").value;
+    var maxround = parseInt(document.getElementById("maxround").value);
+    var duration = parseInt(document.getElementById("duration").value);
+    var bond = parseInt(document.getElementById("bond").value);
+    var reward = parseInt(document.getElementById("reward").value);
 
-    var quest;
-    Question.deployed().then(function(instance) {
-      quest = instance;
-      return quest.getBalance.call(account, {from: account});
+    var questList;
+    QuestionList.deployed().then(function(instance) {
+      questList = instance;
+      return questList.createQuestion.sendTransaction("QmfMGfnki34CWW3hthFv9osHnAusyYmGNfki4zcTmwXbnc", 1, 1, 1, 1, {from: "0x94cce90457ec9fcc91e13c31aac7a3e0a6d1979c"});
     }).then(function(value) {
-      var balance_element = document.getElementById("balance");
-      balance_element.innerHTML = value.valueOf();
+      console.log(value);
     }).catch(function(e) {
       console.log(e);
-      self.setStatus("Error getting balance; see log.");
+      console.log("Error creating question; see log.");
     });
-  },*/
+  },
 
-  refreshBalance: function() {
+  displayQuestion: function() {
     var self = this;
 
-    var quest;
-    Question.deployed().then(function(instance) {
-      quest = instance;
-      return quest.getRound.call(account, {from: account});
+    var questList;
+    QuestionList.deployed().then(function(instance) {
+      questList = instance;
+      return questList.displayQuestion.call();
     }).then(function(value) {
-      var balance_element = document.getElementById("balance");
-      balance_element.innerHTML = value.valueOf();
+      console.log(value);
+      for (var entry of value) {
+        console.log(entry);
+        document.getElementById("questions").value += entry+"\n";
+      }
     }).catch(function(e) {
       console.log(e);
-      self.setStatus("Error getting balance; see log.");
+      console.log("Error displaying questions; see log.");
     });
   },
 
-  sendCoin: function() {
+  getQuestion: function() {
     var self = this;
 
-    var amount = parseInt(document.getElementById("amount").value);
-    var receiver = document.getElementById("receiver").value;
-
-    this.setStatus("Initiating transaction... (please wait)");
-
-    var quest;
-    Question.deployed().then(function(instance) {
-      quest = instance;
-      return quest.sendCoin(receiver, amount, {from: account});
-    }).then(function() {
-      self.setStatus("Transaction complete!");
-      self.refreshBalance();
+    var questList;
+    QuestionList.deployed().then(function(instance) {
+      questList = instance;
+      return questList.getQuestion.call("123");
+    }).then(function(value) {
+      console.log(value);
+      for (var entry of value) {
+        console.log(entry);
+        document.getElementById("questions").value += entry+"\n";
+      }
     }).catch(function(e) {
       console.log(e);
-      self.setStatus("Error sending coin; see log.");
+      console.log("Error displaying questions; see log.");
     });
-  },
-
-  getBalance: function() {
-    var self = this;
-
-    var receiver = document.getElementById("receiver").value;
-
-    var quest;
-    Question.deployed().then(function(instance) {
-      quest = instance;
-      quest.getBalance.call(receiver, {from: accounts[0]}).then(function(balance) {
-        console.log(balance.toNumber());
-      });
-    })
   }
 };
 
